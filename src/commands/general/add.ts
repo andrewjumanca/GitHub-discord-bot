@@ -1,5 +1,9 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import type { Command } from '../../structures/command.js';
+// import { Server } from '../../models/server.js';
+// import { Octokit } from 'octokit';
+// import { Endpoints } from "@octokit/types";
+// import { Collection } from 'mongodb';
 
 export default {
     data: {
@@ -16,6 +20,12 @@ export default {
                 type: 3,
                 description: 'Name of the repository in the organization',
                 required: true
+            },
+            {
+                name: 'channels',
+                type: 3,
+                description: 'List of channels to subscribe, separated by commas. Default is the current channel.',
+                required: false
             },
             {
                 name: 'secret',
@@ -38,10 +48,34 @@ export default {
         cooldown: 5
     },
     async execute(interaction: ChatInputCommandInteraction<'cached'>) {
+        console.log(interaction.channel.name);
+        console.log(interaction.channelId);
         await interaction.reply({
             content: 'Creating a new repository webhook...',
             fetchReply: true
         })
+
+        // const serverId = interaction.guild.id;
+        // const serverName = interaction.guild.name;
+
+        // const server = await Server.findOneAndUpdate(
+        //     { guildId: serverId },
+        //     { guildId: serverId, serverName: serverName },
+        //     { new: true, upsert: true }
+        // );
+
+        const channelsParam = interaction.options.getString('channel');
+
+        if (!channelsParam) {
+            // add interaction.channel.name;
+        } else if (channelsParam.toLowerCase() == 'all') {
+            // subscribe all channels in server to repository notifications
+        } else {
+            const channels = channelsParam.split(',').map(channel => channel.trim());
+            console.log(channels);
+            // add all channels in this list, only add valid ones and state which were invalid
+            // and could not be added
+        }
 
         try {
             await interaction.editReply({
